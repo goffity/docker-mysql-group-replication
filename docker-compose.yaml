@@ -1,15 +1,16 @@
 version: '3'
 services: 
   server_1:
-    image: mysql:5.7
+    build: 
+      context: ./server-1
     container_name: mysql_grp_repl_1
     ports: 
       - "33061:3306"
       - "33071:33061"
     volumes: 
       - "./.data/server1/db:/var/lib/mysql"
-      # - "./.logs/server1/mysql:/var/log/mysql"
-      - "./my_1.cnf:/etc/mysql/my.cnf"
+      - "./.logs/server1/mysql:/var/log/mysql"
+      - "./server-1/my.cnf:/etc/mysql/my.cnf"
     command: --lower_case_table_names=2
     environment:
           MYSQL_ROOT_PASSWORD: root
@@ -18,46 +19,48 @@ services:
         ipv4_address: 172.20.0.2
 
   server_2:
-    image: mysql:5.7
+    build: 
+      context: ./server-2
     container_name: mysql_grp_repl_2
-    ports: 
+    ports:
       - "33062:3306"
       - "33072:33061"
-    volumes: 
+    volumes:
       - "./.data/server2/db:/var/lib/mysql"
-      # - "./.logs/server2/mysql:/var/log/mysql"
-      - "./my_2.cnf:/etc/mysql/my.cnf"
+      - "./.logs/server2/mysql:/var/log/mysql"
+      - "./server-2/my.cnf:/etc/mysql/my.cnf"
     command: --lower_case_table_names=2
     environment:
           MYSQL_ROOT_PASSWORD: root
-    depends_on: 
+    depends_on:
       - server_1
     networks:
       default:
         ipv4_address: 172.20.0.3
 
   server_3:
-    image: mysql:5.7
+    build: 
+      context: ./server-3
     container_name: mysql_grp_repl_3
-    ports: 
+    ports:
       - "33063:3306"
       - "33073:33061"
-    volumes: 
+    volumes:
       - "./.data/server3/db:/var/lib/mysql"
-      # - "./.logs/server3/mysql:/var/log/mysql"
-      - "./my_3.cnf:/etc/mysql/my.cnf"
+      - "./.logs/server3/mysql:/var/log/mysql"
+      - "./server-3/my.cnf:/etc/mysql/my.cnf"
     command: --lower_case_table_names=2
     environment:
           MYSQL_ROOT_PASSWORD: root
-    depends_on: 
+    depends_on:
       - server_2
     networks:
       default:
         ipv4_address: 172.20.0.4
 
-networks: 
+networks:
   default:
     driver: bridge
-    ipam: 
-      config: 
+    ipam:
+      config:
         - subnet: 172.20.0.0/16
